@@ -1,0 +1,8 @@
+flask
+easyocr
+opencv-python
+pillow
+pdf2image
+pandas
+numpy
+scikit-learn

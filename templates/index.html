@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVision - Smart Academic Insights</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div>
+                    <div class="logo-text">EduVision</div>
+                    <div class="tagline">Smart Academic Insights from Scanned Reports</div>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="{{ url_for('home') }}" class="nav-link active">Home</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="#" class="nav-link">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="upload-card">
+                <div class="upload-icon">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <h1 class="card-title">Upload Student Report Card</h1>
+                <p class="card-subtitle">Upload a scan or photo of a student report card to generate insights</p>
+                
+                <form id="upload-form" class="upload-form" action="/predict" method="post" enctype="multipart/form-data">
+                    <div class="file-input-container">
+                        <input type="file" id="file-input" class="file-input" name="file" accept="image/*,application/pdf">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #ddd;"></i>
+                        <p class="file-input-label">Click or drag file to upload</p>
+                        <p id="file-name"></p>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-chart-pie"></i> Generate Insights
+                    </button>
+                </form>
+                
+                <div id="loader" class="loader">
+                    <div class="loader-spinner"></div>
+                    <p class="loader-text">Processing report card. Please wait...</p>
+                </div>
+                
+                <div id="result"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">&copy; 2025 EduVision. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Display file name when selected
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'No file selected';
+            document.getElementById('file-name').textContent = fileName;
+        });
+
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loader
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+            
+            // Hide result if visible
+            document.getElementById('result').innerHTML = '';
+            
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    // Redirect to the result page (handled by Flask rendering result.html)
+                    window.location.href = '/predict';
+                } else {
+                    const data = await response.text();
+                    document.getElementById('result').innerHTML = `
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle"></i> 
+                            Error: ${data.error || 'Prediction failed'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        Network error: ${error.message}
+                    </div>
+                `;
+            } finally {
+                // Hide loader
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

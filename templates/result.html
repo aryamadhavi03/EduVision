@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVision - Student Insights</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div>
+                    <div class="logo-text">EduVision</div>
+                    <div class="tagline">Smart Academic Insights from Scanned Reports</div>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="#" class="nav-link">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">Student Academic Insights</h1>
+                    <a href="{{ url_for('home') }}" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Upload
+                    </a>
+                </div>
+
+                <div class="results-grid">
+                    <!-- Bar Chart for Subject Marks -->
+                    <div class="chart-container">
+                        <h2 class="chart-title">
+                            <i class="fas fa-chart-bar"></i> Subject Performance
+                        </h2>
+                        <canvas id="marksChart"></canvas>
+                    </div>
+
+                    <!-- Pie Chart for Attendance -->
+                    <div class="chart-container">
+                        <h2 class="chart-title">
+                            <i class="fas fa-calendar-check"></i> Attendance Distribution
+                        </h2>
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Highlighted Recommendation Box -->
+                <div class="recommendation-box recommendation-{{ prediction|lower }}">
+                    <h3 class="recommendation-title">
+                        <i class="fas fa-lightbulb"></i> Academic Recommendation
+                    </h3>
+                    <p>{{ prediction }}</p>
+                    <p class="confidence">Confidence: {{ confidence }}%</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">&copy; 2025 EduVision. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JSON Data for JavaScript -->
+    <script type="application/json" id="chartData">
+        {
+            "labels": {{ chart_data["labels"] | tojson | safe }},
+            "values": {{ chart_data["values"] | tojson | safe }}
+        }
+    </script>
+    <script type="application/json" id="attendanceData">
+        {
+            "value": {{ attendance_data["value"] | tojson | safe }},
+            "remaining": {{ attendance_data["remaining"] | tojson | safe }}
+        }
+    </script>
+
+    <script>
+        // Parse JSON data
+        const chartDataJson = JSON.parse(document.getElementById('chartData').textContent);
+        const attendanceDataJson = JSON.parse(document.getElementById('attendanceData').textContent);
+
+        const subjectLabels = chartDataJson.labels;
+        const subjectValues = chartDataJson.values;
+        const attendanceValue = attendanceDataJson.value;
+        const attendanceRemaining = attendanceDataJson.remaining;
+
+        // Bar Chart for Subject Marks
+        const marksCtx = document.getElementById('marksChart').getContext('2d');
+        new Chart(marksCtx, {
+            type: 'bar',
+            data: {
+                labels: subjectLabels,
+                datasets: [{
+                    label: 'Marks',
+                    data: subjectValues,
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: false
+                    },
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' marks';
+                            }
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+
+        // Pie Chart for Attendance
+        const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(attendanceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Absent'],
+                datasets: [{
+                    data: [attendanceValue, attendanceRemaining],
+                    backgroundColor: ['#4CAF50', '#FF6384'],
+                    borderColor: ['#388E3C', '#D81B60'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
+    </script>
+</body>
+</html>

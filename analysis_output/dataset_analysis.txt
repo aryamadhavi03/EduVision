@@ -1,0 +1,78 @@
+=== Basic Dataset Information ===
+Dataset Shape (Rows, Columns): (99999, 8)
+
+Dataset Info:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 99999 entries, 0 to 99998
+Data columns (total 8 columns):
+ #   Column          Non-Null Count  Dtype 
+---  ------          --------------  ----- 
+ 0   StudentID       99999 non-null  object
+ 1   Maths           99999 non-null  int64 
+ 2   Science         99999 non-null  int64 
+ 3   English         99999 non-null  int64 
+ 4   History         99999 non-null  int64 
+ 5   Computer        99999 non-null  int64 
+ 6   Attendance(%)   99999 non-null  int64 
+ 7   Recommendation  99999 non-null  object
+dtypes: int64(6), object(2)
+memory usage: 6.1+ MB
+
+First 5 Rows:
+  StudentID  Maths  Science  English  History  Computer  Attendance(%)     Recommendation
+0     S0001     77       67       79       92        66             82  Needs Improvement
+1     S0002     93       81       62       78        63             80  Needs Improvement
+2     S0003     73       41       44       61        54             88  Needs Improvement
+3     S0004     56       48       91       66        71             70  Needs Improvement
+4     S0005     61       71       52       75        60             82  Needs Improvement
+
+=== Summary Statistics ===
+              Maths       Science       English       History      Computer  Attendance(%)
+count  99999.000000  99999.000000  99999.000000  99999.000000  99999.000000   99999.000000
+mean      64.988600     64.977410     65.024720     65.014480     65.009330      86.519975
+std       18.205961     18.199933     18.206454     18.193445     18.204339       9.091648
+min       30.000000     30.000000     30.000000     30.000000     30.000000      50.000000
+25%       51.000000     51.000000     51.000000     51.000000     51.000000      81.000000
+50%       65.000000     65.000000     66.000000     66.000000     66.000000      87.000000
+75%       79.000000     79.000000     79.000000     79.000000     79.000000      93.000000
+max      100.000000    100.000000    100.000000    100.000000    100.000000     100.000000
+
+=== Missing Values ===
+StudentID         0
+Maths             0
+Science           0
+English           0
+History           0
+Computer          0
+Attendance(%)     0
+Recommendation    0
+Total rows with any missing value: 0
+
+=== Duplicate Rows ===
+Number of duplicate rows: 0
+No duplicate rows found.
+
+=== Distribution of Recommendation ===
+Recommendation
+Needs Improvement                33333
+Eligible for Advanced Courses    33333
+High Risk of Failure             33333
+Percentage Distribution:
+Needs Improvement: 33.33%
+Eligible for Advanced Courses: 33.33%
+High Risk of Failure: 33.33%
+
+=== Distribution of Numeric Features ===
+Histograms saved as 'feature_distributions.png'
+
+=== Box Plots for Outlier Detection ===
+Box plots saved as 'box_plots.png'
+
+=== Correlation Matrix ===
+Correlation matrix saved as 'correlation_matrix.png'
+
+=== Analysis Summary ===
+Total rows: 99999
+Total columns: 8
+Balanced categories: True
+Analysis completed. Check 'analysis_output' directory for files.
